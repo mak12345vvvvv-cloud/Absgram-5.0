@@ -1,27 +1,10 @@
-
+ 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AbSgram HD 8.0 — Полный функционал с глобальными звонками</title>
-    <!-- OneSignal SDK (фоновые push-уведомления) -->
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(async function(OneSignal) {
-        await OneSignal.init({
-          appId: "33e5e9c7-33ae-457c-b759-9fcd28e77db4",
-          allowLocalhostAsSecureOrigin: true,
-          notifyButton: {
-            enable: false, // кнопку не показываем, управление через интерфейс
-          },
-          welcomeNotification: {
-            disable: true // отключаем приветственное уведомление
-          }
-        });
-      });
-    </script>
     <style>
         /* ========== СТИЛИ ПОЛНОСТЬЮ (БЕЗ ИЗМЕНЕНИЙ) ========== */
         :root {
@@ -3437,47 +3420,6 @@
             margin-top: 10px;
             width: 100%;
         }
-
-        /* Стиль для переключателя push-уведомлений в настройках */
-        .settings-switch {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 15px 0;
-        }
-        .settings-switch label {
-            color: var(--text);
-            font-size: 14px;
-        }
-        .settings-switch input[type="checkbox"] {
-            width: 50px;
-            height: 24px;
-            -webkit-appearance: none;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            border: 2px solid rgba(255,107,53,0.3);
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .settings-switch input[type="checkbox"]:checked {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-        .settings-switch input[type="checkbox"]::before {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            top: 0;
-            left: 0;
-            transition: all 0.3s;
-        }
-        .settings-switch input[type="checkbox"]:checked::before {
-            left: 26px;
-        }
     </style>
 </head>
 <body>
@@ -3665,15 +3607,36 @@
                 </div>
                 <button class="btn" style="width: 100%; margin-top: 8px;" id="createPostBtn">➕ Добавить пост</button>
             </div>
-
-            <!-- Настройки push-уведомлений -->
+            
+            <!-- ===== НОВЫЙ БЛОК ДЛЯ PUSH-УВЕДОМЛЕНИЙ ===== -->
             <div class="info-section">
                 <h3>🔔 Уведомления</h3>
-                <div class="settings-switch">
-                    <label>Push-уведомления (фон)</label>
-                    <input type="checkbox" id="pushNotificationsToggle" checked>
+                <div class="info-item">
+                    <div class="info-label">Push-уведомления</div>
+                    <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 24px;">
+                        <input type="checkbox" id="pushNotificationsToggle" style="opacity: 0; width: 0; height: 0;">
+                        <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                        <style>
+                            .switch .slider:before {
+                                position: absolute;
+                                content: "";
+                                height: 18px;
+                                width: 18px;
+                                left: 3px;
+                                bottom: 3px;
+                                background-color: white;
+                                transition: .4s;
+                                border-radius: 50%;
+                            }
+                            input:checked + .slider {
+                                background-color: var(--primary);
+                            }
+                            input:checked + .slider:before {
+                                transform: translateX(26px);
+                            }
+                        </style>
+                    </label>
                 </div>
-                <p style="font-size: 12px; color: var(--text-secondary);">Получайте уведомления о новых сообщениях и звонках даже когда сайт закрыт</p>
             </div>
             
             <button class="btn" style="width: 100%; margin-top: 15px;" id="editNameBtn">
@@ -4161,7 +4124,7 @@
     </audio>
 
     <script type="module">
-        // ========== ИМПОРТЫ (исправлены: добавлены arrayRemove, increment, writeBatch) ==========
+        // ========== ИМПОРТЫ ==========
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { 
             getAuth, 
@@ -4191,6 +4154,11 @@
             increment,
             writeBatch
         } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { 
+            getMessaging, 
+            getToken, 
+            onMessage 
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
 
         // ========== КЛАСС FILE STORAGE ДЛЯ INDEXEDDB ==========
         class FileStorage {
@@ -4420,6 +4388,7 @@
             }
         }
 
+        // ========== КОНФИГУРАЦИЯ FIREBASE ==========
         const firebaseConfig = {
             apiKey: "AIzaSyBRNl0xA5ie8EGcZ4UIdP0e1IJuacoMarE",
             authDomain: "gocklain-bf553.firebaseapp.com",
@@ -4430,7 +4399,10 @@
             measurementId: "G-1LBP6KFPL9"
         };
 
-        let app, auth, db;
+        // ===== VAPID КЛЮЧ (ПРЕДОСТАВЛЕН ПОЛЬЗОВАТЕЛЕМ) =====
+        const vapidKey = "BMUueTFOICuaMJDVdTnKuSp1Xdeg6DcgxdId52_qeF8kQWOuSO7_Lpmw5m_dZwKCotltQqkZ7nhyhBbtsnCPqQk";
+
+        let app, auth, db, messaging;
         let authError = false;
         let fileStorage;
 
@@ -4438,6 +4410,7 @@
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
+            messaging = getMessaging(app);
             fileStorage = new FileStorage();
             console.log("✅ Firebase и IndexedDB инициализированы");
         } catch (error) {
@@ -4516,57 +4489,140 @@
         let tempGroupAvatar = null;
         let tempChannelAvatar = null;
 
-        // Переменная для состояния push-уведомлений
-        let pushNotificationsEnabled = true;
-
-        // Функция для отправки push-уведомления через OneSignal
-        async function sendPushNotification(title, message, data = {}) {
-            if (!pushNotificationsEnabled) {
-                console.log('Push-уведомления отключены пользователем');
-                return;
-            }
-
-            if (!window.OneSignal) {
-                console.log('OneSignal не загружен');
-                showPushNotification(title, message); // fallback на внутреннее уведомление
-                return;
-            }
-
-            try {
-                const OneSignal = window.OneSignal;
-                // Проверяем, подписан ли пользователь
-                const subscription = await OneSignal.User.PushSubscription.getOptedIn();
-                if (!subscription) {
-                    console.log('Пользователь не подписан на push');
-                    showPushNotification(title, message);
-                    return;
-                }
-
-                // Показываем внутреннее уведомление в приложении
-                showPushNotification(title, message);
-
-                // OneSignal автоматически отправляет уведомления при получении данных с сервера
-                // Для кастомных уведомлений можно использовать external user id
-                // Но здесь просто показываем внутреннее уведомление
-                console.log('Push-уведомление готово к отправке:', { title, message, data });
-
-                // Можно также отправить уведомление через внешний сервер, но в данном примере мы просто показываем внутреннее
-                // showPushNotification(title, message);
-
-            } catch (error) {
-                console.error('Ошибка отправки push-уведомления:', error);
-                showPushNotification(title, message); // fallback
-            }
-        }
+        // ===== НОВЫЕ ПЕРЕМЕННЫЕ ДЛЯ PUSH-УВЕДОМЛЕНИЙ =====
+        let fcmToken = null;
+        let pushNotificationsEnabled = true; // По умолчанию включены
 
         window.addEventListener('fileProgress', (e) => {
             const { fileId, progress } = e.detail;
             console.log(`Файл ${fileId}: ${progress}%`);
         });
 
-        function showLoading(show) {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.toggle('hidden', !show);
+        // ===== ФУНКЦИИ ДЛЯ РАБОТЫ С PUSH-УВЕДОМЛЕНИЯМИ =====
+        async function initializeFirebaseMessaging() {
+            if (authError || !messaging) return;
+
+            try {
+                // Проверяем поддержку service worker
+                if (!('serviceWorker' in navigator)) {
+                    console.log('Service Workers не поддерживаются');
+                    return;
+                }
+
+                // Проверяем разрешение
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    console.log('Разрешение на уведомления не получено');
+                    return;
+                }
+
+                // Регистрируем service worker
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+                    scope: '/'
+                });
+                console.log('Service Worker зарегистрирован:', registration);
+
+                // Получаем токен
+                const token = await getToken(messaging, {
+                    vapidKey: vapidKey,
+                    serviceWorkerRegistration: registration
+                });
+
+                if (token) {
+                    fcmToken = token;
+                    console.log('FCM Token получен:', token);
+                    
+                    // Сохраняем токен в Firestore для пользователя
+                    if (currentUser && !authError) {
+                        await updateDoc(doc(db, 'users', currentUser.id), {
+                            fcmToken: token,
+                            pushEnabled: pushNotificationsEnabled
+                        });
+                    }
+                } else {
+                    console.log('Не удалось получить FCM Token');
+                }
+
+                // Слушаем сообщения, когда приложение открыто
+                onMessage(messaging, (payload) => {
+                    console.log('Получено foreground сообщение:', payload);
+                    
+                    // Показываем уведомление в интерфейсе
+                    if (payload.notification) {
+                        showPushNotification(
+                            payload.notification.title || 'Новое уведомление',
+                            payload.notification.body || ''
+                        );
+                    }
+                });
+
+            } catch (error) {
+                console.error('Ошибка инициализации Firebase Messaging:', error);
+            }
+        }
+
+        async function togglePushNotifications(enabled) {
+            pushNotificationsEnabled = enabled;
+            
+            if (!currentUser || authError) return;
+
+            try {
+                if (enabled) {
+                    // Включаем уведомления - запрашиваем токен
+                    await initializeFirebaseMessaging();
+                } else {
+                    // Отключаем уведомления - удаляем токен из Firestore
+                    await updateDoc(doc(db, 'users', currentUser.id), {
+                        fcmToken: null,
+                        pushEnabled: false
+                    });
+                    fcmToken = null;
+                }
+                
+                showNotification(enabled ? 'Push-уведомления включены' : 'Push-уведомления отключены', 'success');
+            } catch (error) {
+                console.error('Ошибка переключения уведомлений:', error);
+                showNotification('Ошибка изменения настроек уведомлений', 'error');
+            }
+        }
+
+        // ===== ФУНКЦИЯ ДЛЯ ОТПРАВКИ PUSH-УВЕДОМЛЕНИЯ (ВЫЗЫВАЕТСЯ ПРИ НОВОМ СООБЩЕНИИ) =====
+        async function sendPushNotification(recipientId, title, body, data = {}) {
+            if (!recipientId || recipientId === currentUser?.id) return; // Не отправляем себе
+            if (!pushNotificationsEnabled) return; // Глобально отключено у отправителя? Здесь проверка для получателя
+
+            try {
+                // Получаем данные получателя
+                const userDoc = await getDoc(doc(db, 'users', recipientId));
+                if (!userDoc.exists()) return;
+
+                const userData = userDoc.data();
+                
+                // Проверяем, включены ли уведомления у получателя
+                if (userData.pushEnabled === false) return;
+                
+                const recipientToken = userData.fcmToken;
+                if (!recipientToken) return;
+
+                // Здесь должен быть вызов вашего серверного API для отправки уведомления
+                // Так как мы не можем отправлять напрямую из браузера (нужен сервер),
+                // мы будем использовать Firestore как "буфер" и обрабатывать на клиенте,
+                // но для реальных пушей нужен бэкенд.
+                
+                // Альтернатива: сохраняем уведомление в Firestore, и service worker обрабатывает его
+                await addDoc(collection(db, 'push_notifications'), {
+                    token: recipientToken,
+                    title: title,
+                    body: body,
+                    data: data,
+                    createdAt: serverTimestamp()
+                });
+
+                console.log('Push-уведомление запланировано для', recipientId);
+
+            } catch (error) {
+                console.error('Ошибка отправки push-уведомления:', error);
+            }
         }
 
         function showNotification(message, type = 'info', isPersistent = false) {
@@ -5029,11 +5085,8 @@
                 
                 if (permission === "granted") {
                     showPushNotification('Уведомления включены', 'Теперь вы будете получать уведомления о новых сообщениях и звонках');
-                    
-                    // Включаем push-уведомления в OneSignal
-                    if (window.OneSignal) {
-                        await window.OneSignal.Notifications.requestPermission();
-                    }
+                    // Инициализируем Firebase Messaging после получения разрешения
+                    await initializeFirebaseMessaging();
                 }
                 
                 document.getElementById('notificationPermission').classList.add('hidden');
@@ -5158,24 +5211,9 @@
                 }
             });
 
-            // Переключатель push-уведомлений
-            document.getElementById('pushNotificationsToggle').addEventListener('change', async (e) => {
-                pushNotificationsEnabled = e.target.checked;
-                
-                if (pushNotificationsEnabled && window.OneSignal) {
-                    // Запрашиваем разрешение, если ещё нет
-                    const permission = await Notification.requestPermission();
-                    if (permission === 'granted') {
-                        await window.OneSignal.Notifications.requestPermission();
-                        showNotification('Push-уведомления включены', 'success');
-                    } else {
-                        showNotification('Не удалось включить уведомления. Проверьте разрешения браузера.', 'error');
-                        e.target.checked = false;
-                        pushNotificationsEnabled = false;
-                    }
-                } else {
-                    showNotification('Push-уведомления отключены', 'info');
-                }
+            // ===== НОВЫЙ ОБРАБОТЧИК ДЛЯ ПЕРЕКЛЮЧАТЕЛЯ УВЕДОМЛЕНИЙ =====
+            document.getElementById('pushNotificationsToggle').addEventListener('change', (e) => {
+                togglePushNotifications(e.target.checked);
             });
         }
 
@@ -6153,6 +6191,13 @@
                         showScreen('chatsScreen');
                         await loadChats();
                         loadAllNicknames();
+                        loadCallsDisabledState();
+                        // Загружаем состояние уведомлений из localStorage
+                        const savedPushState = localStorage.getItem(`pushEnabled_${currentUser.id}`);
+                        if (savedPushState !== null) {
+                            pushNotificationsEnabled = savedPushState === 'true';
+                            document.getElementById('pushNotificationsToggle').checked = pushNotificationsEnabled;
+                        }
                     } else {
                         throw new Error('Неверный логин или пароль');
                     }
@@ -6288,7 +6333,8 @@
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                     searchName: name.toLowerCase(),
-                    searchUsername: username.toLowerCase()
+                    searchUsername: username.toLowerCase(),
+                    pushEnabled: true // По умолчанию включены
                 };
                 
                 console.log("📝 Данные для сохранения:", userData);
@@ -6353,6 +6399,9 @@
                     
                     currentUser.realIsOnline = diffMinutes < 2;
                     
+                    // Загружаем состояние уведомлений
+                    pushNotificationsEnabled = userData.pushEnabled !== false;
+                    
                     console.log("✅ Данные пользователя загружены:", currentUser);
                     updateProfile();
                     
@@ -6410,7 +6459,13 @@
             } else {
                 postsContainer.innerHTML = '<div style="color: var(--text-secondary); text-align: center; width: 100%;">У вас пока нет постов</div>';
             }
-            
+
+            // Обновляем переключатель уведомлений
+            const toggle = document.getElementById('pushNotificationsToggle');
+            if (toggle) {
+                toggle.checked = pushNotificationsEnabled;
+            }
+
             loadUserChatsCount();
         }
 
@@ -8303,6 +8358,19 @@
                     lastMessage: text.length > 50 ? text.substring(0, 50) + '...' : text,
                     updatedAt: serverTimestamp()
                 });
+
+                // ===== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ПОЛУЧАТЕЛЮ =====
+                if (!currentChat.isGroup && !currentChat.isChannel) {
+                    const recipientId = currentChat.participants.find(id => id !== currentUser.id);
+                    if (recipientId) {
+                        await sendPushNotification(
+                            recipientId,
+                            currentUser.name,
+                            text,
+                            { chatId: currentChat.id, type: 'message' }
+                        );
+                    }
+                }
                 
                 const messageElement = document.getElementById(`message-${messageId}`);
                 if (messageElement) {
@@ -8477,6 +8545,19 @@
                                 lastMessage: lastMessage,
                                 updatedAt: serverTimestamp()
                             });
+
+                            // ===== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ДЛЯ ФАЙЛА =====
+                            if (!currentChat.isGroup && !currentChat.isChannel) {
+                                const recipientId = currentChat.participants.find(id => id !== currentUser.id);
+                                if (recipientId) {
+                                    await sendPushNotification(
+                                        recipientId,
+                                        currentUser.name,
+                                        lastMessage,
+                                        { chatId: currentChat.id, type: 'file' }
+                                    );
+                                }
+                            }
                         }
                         
                         showNotification('Файл отправлен', 'success');
@@ -8627,6 +8708,19 @@
                         lastMessage: '🎤 Голосовое сообщение',
                         updatedAt: serverTimestamp()
                     });
+
+                    // ===== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ДЛЯ ГОЛОСОВОГО =====
+                    if (!currentChat.isGroup && !currentChat.isChannel) {
+                        const recipientId = currentChat.participants.find(id => id !== currentUser.id);
+                        if (recipientId) {
+                            await sendPushNotification(
+                                recipientId,
+                                currentUser.name,
+                                '🎤 Голосовое сообщение',
+                                { chatId: currentChat.id, type: 'voice' }
+                            );
+                        }
+                    }
                     
                     showNotification('Голосовое сообщение отправлено', 'success');
                     loadChats();
@@ -8940,6 +9034,19 @@
                     lastMessage: '🎬 Видеосообщение',
                     updatedAt: serverTimestamp()
                 });
+
+                // ===== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ДЛЯ ВИДЕО =====
+                if (!currentChat.isGroup && !currentChat.isChannel) {
+                    const recipientId = currentChat.participants.find(id => id !== currentUser.id);
+                    if (recipientId) {
+                        await sendPushNotification(
+                            recipientId,
+                            currentUser.name,
+                            '🎬 Видеосообщение',
+                            { chatId: currentChat.id, type: 'video' }
+                        );
+                    }
+                }
                 
                 showNotification('Видеосообщение отправлено', 'success');
                 loadChats();
@@ -9007,6 +9114,19 @@
                     lastMessage: '🎬 Видеосообщение (большое)',
                     updatedAt: serverTimestamp()
                 });
+
+                // ===== ОТПРАВКА PUSH-УВЕДОМЛЕНИЯ ДЛЯ БОЛЬШОГО ВИДЕО =====
+                if (!currentChat.isGroup && !currentChat.isChannel) {
+                    const recipientId = currentChat.participants.find(id => id !== currentUser.id);
+                    if (recipientId) {
+                        await sendPushNotification(
+                            recipientId,
+                            currentUser.name,
+                            '🎬 Большое видеосообщение',
+                            { chatId: currentChat.id, type: 'video' }
+                        );
+                    }
+                }
             }
             
             showNotification('Видео загружено по частям', 'success');
@@ -11191,87 +11311,6 @@
             });
         });
 
-        // ========== НОВАЯ ФУНКЦИЯ createPost ==========
-        async function createPost() {
-            const postText = prompt('Введите текст поста (до 200 символов):');
-            if (!postText || postText.trim() === '') return;
-            
-            showLoading(true);
-            
-            try {
-                const post = {
-                    text: postText.trim(),
-                    createdAt: authError ? new Date().toISOString() : serverTimestamp(),
-                    userId: currentUser.id
-                };
-                
-                if (authError) {
-                    // Локальное хранение
-                    const localPosts = JSON.parse(localStorage.getItem('absgram_posts') || '[]');
-                    const newPost = {
-                        id: 'post_' + Date.now(),
-                        ...post,
-                        createdAt: new Date().toISOString()
-                    };
-                    localPosts.push(newPost);
-                    localStorage.setItem('absgram_posts', JSON.stringify(localPosts));
-                    
-                    // Добавляем в Map
-                    const userPosts = posts.get(currentUser.id) || [];
-                    userPosts.unshift(newPost);
-                    if (userPosts.length > 10) userPosts.pop();
-                    posts.set(currentUser.id, userPosts);
-                } else {
-                    // Сохраняем в Firestore
-                    const postRef = await addDoc(collection(db, 'posts'), post);
-                    
-                    // Загружаем обновленные посты
-                    await loadUserPosts(currentUser.id);
-                }
-                
-                updateProfile();
-                showNotification('Пост добавлен в историю', 'success');
-                
-            } catch (error) {
-                console.error('Ошибка создания поста:', error);
-                showNotification('Ошибка создания поста', 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Новая функция для загрузки постов пользователя
-        async function loadUserPosts(userId) {
-            try {
-                if (authError) {
-                    const localPosts = JSON.parse(localStorage.getItem('absgram_posts') || '[]');
-                    const userPosts = localPosts
-                        .filter(p => p.userId === userId)
-                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                        .slice(0, 10);
-                    posts.set(userId, userPosts);
-                    return userPosts;
-                } else {
-                    const postsQuery = query(
-                        collection(db, 'posts'),
-                        where('userId', '==', userId),
-                        orderBy('createdAt', 'desc'),
-                        limit(10)
-                    );
-                    const snapshot = await getDocs(postsQuery);
-                    const userPosts = [];
-                    snapshot.forEach(doc => {
-                        userPosts.push({ id: doc.id, ...doc.data() });
-                    });
-                    posts.set(userId, userPosts);
-                    return userPosts;
-                }
-            } catch (error) {
-                console.error('Ошибка загрузки постов:', error);
-                return [];
-            }
-        }
-
         function init() {
             console.log("🚀 Инициализация AbSgram 8.0 HD...");
             initEventListeners();
@@ -11286,6 +11325,12 @@
                     loadAllNicknames();
                     updateUnreadCounts();
                     loadCallsDisabledState();
+                    // Загружаем состояние уведомлений из localStorage
+                    const savedPushState = localStorage.getItem(`pushEnabled_${currentUser.id}`);
+                    if (savedPushState !== null) {
+                        pushNotificationsEnabled = savedPushState === 'true';
+                        document.getElementById('pushNotificationsToggle').checked = pushNotificationsEnabled;
+                    }
                 } else {
                     showScreen('authScreen');
                 }
@@ -11308,6 +11353,11 @@
                         setupCallListeners();
                         updateUnreadCounts();
                         loadCallsDisabledState();
+                        
+                        // Запускаем инициализацию Firebase Messaging, если уведомления включены
+                        if (pushNotificationsEnabled) {
+                            await initializeFirebaseMessaging();
+                        }
                         
                         // Запускаем очистку устаревших звонков
                         cleanupStaleCalls();
@@ -11334,6 +11384,12 @@
                                 loadAllNicknames();
                                 updateUnreadCounts();
                                 loadCallsDisabledState();
+                                // Загружаем состояние уведомлений из localStorage
+                                const savedPushState = localStorage.getItem(`pushEnabled_${currentUser.id}`);
+                                if (savedPushState !== null) {
+                                    pushNotificationsEnabled = savedPushState === 'true';
+                                    document.getElementById('pushNotificationsToggle').checked = pushNotificationsEnabled;
+                                }
                             } else {
                                 showScreen('authScreen');
                             }
@@ -11375,3 +11431,4 @@
     </script>
 </body>
 </html>
+ 
