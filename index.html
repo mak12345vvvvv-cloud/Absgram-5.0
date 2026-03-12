@@ -16,13 +16,15 @@
                 allowLocalhostAsSecureOrigin: true,
                 welcomeNotification: {
                     disable: true
-                }
+                },
+                serviceWorkerParam: { scope: '/' },
+                serviceWorkerPath: 'OneSignalSDKWorker.js'
             });
         });
     </script>
     
     <style>
-        /* ========== СТИЛИ ПОЛНОСТЬЮ (БЕЗ ИЗМЕНЕНИЙ) ========== */
+        /* ========== СТИЛИ ПОЛНОСТЬЮ ========== */
         :root {
             --primary: #FF6B35;
             --primary-dark: #E55A2B;
@@ -2090,7 +2092,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         
-        /* Стили для выбора типа звонка */
         .call-type-selector {
             display: flex;
             gap: 15px;
@@ -2132,7 +2133,6 @@
             font-weight: 600;
         }
         
-        /* Контейнер для видео */
         .video-container {
             position: relative;
             width: 100%;
@@ -2178,7 +2178,6 @@
             z-index: 20;
         }
         
-        /* Кнопка присоединения к звонку в сообщении */
         .join-call-message-btn {
             background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
             color: white;
@@ -2202,7 +2201,6 @@
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
         }
 
-        /* ЗЕЛЕНЫЙ ИНДИКАТОР ГОВОРЕНИЯ В ЗВОНКЕ */
         .speaking-indicator {
             position: absolute;
             top: 10px;
@@ -2232,7 +2230,6 @@
             display: block;
         }
 
-        /* КНОПКА ОТКЛЮЧЕНИЯ ЗВОНКА */
         .disable-call-btn {
             width: 40px;
             height: 40px;
@@ -2274,7 +2271,6 @@
             opacity: 0.8;
         }
         
-        /* Стили для видео-превью */
         .video-preview-modal {
             position: fixed;
             top: 0;
@@ -2372,7 +2368,6 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         
-        /* Показатель качества соединения */
         .connection-quality {
             position: absolute;
             top: 10px;
@@ -2399,7 +2394,6 @@
             color: #F44336;
         }
         
-        /* Уведомление о больших файлах */
         .file-size-warning {
             color: var(--warning);
             font-size: 12px;
@@ -2409,7 +2403,6 @@
             gap: 5px;
         }
 
-        /* Индикатор сжатия */
         .compression-indicator {
             display: flex;
             align-items: center;
@@ -2419,7 +2412,6 @@
             margin-top: 5px;
         }
 
-        /* Кнопка выбора файла с иконкой */
         .custom-file-input {
             position: relative;
             overflow: hidden;
@@ -2437,7 +2429,6 @@
             cursor: pointer;
         }
 
-        /* Прогресс загрузки файла */
         .upload-progress-container {
             position: absolute;
             bottom: 0;
@@ -2488,7 +2479,6 @@
             font-weight: 600;
         }
 
-        /* Индикатор отправки сообщения */
         .sending-indicator {
             position: absolute;
             top: 10px;
@@ -2506,7 +2496,6 @@
             border-width: 2px;
         }
 
-        /* Стили для блокировки звонков */
         .call-blocked-overlay {
             position: absolute;
             top: 0;
@@ -2530,7 +2519,6 @@
             font-weight: 600;
         }
 
-        /* Стили для видеосообщений (кружки) */
         .video-circle-message {
             width: 300px;
             height: 300px;
@@ -2612,7 +2600,6 @@
             transition: width 0.1s;
         }
 
-        /* Модальное окно записи видеосообщения */
         .video-recording-modal {
             position: fixed;
             top: 0;
@@ -2729,7 +2716,6 @@
             margin-bottom: 10px;
         }
 
-        /* Индикатор записи */
         .recording-indicator {
             position: absolute;
             top: 15px;
@@ -2754,7 +2740,6 @@
             animation: pulse 1s infinite;
         }
 
-        /* Кнопка отправки видеосообщений */
         .video-message-btn {
             width: 40px;
             height: 40px;
@@ -2777,7 +2762,6 @@
             color: #F06292;
         }
         
-        /* Индикатор загрузки больших видео */
         .video-chunk-info {
             background: rgba(255,255,255,0.1);
             padding: 10px;
@@ -2814,7 +2798,6 @@
             font-weight: 600;
         }
 
-        /* Кнопки ввода сообщений меньшего размера */
         .compact-controls {
             display: flex;
             gap: 5px;
@@ -2840,7 +2823,6 @@
             border-radius: 18px;
         }
 
-        /* Видео-превью с крестиком */
         .video-message-preview-modal {
             position: fixed;
             top: 0;
@@ -2896,7 +2878,6 @@
             transform: scale(1.1);
         }
 
-        /* Уведомление о скачивании файла */
         .download-notification {
             position: fixed;
             bottom: 20px;
@@ -2928,7 +2909,6 @@
             font-size: 14px;
         }
 
-        /* Push уведомления */
         .push-notification {
             position: fixed;
             top: 20px;
@@ -2991,7 +2971,6 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* --- НОВЫЕ СТИЛИ ДЛЯ РЕДАКТИРОВАНИЯ, РЕАКЦИЙ --- */
         .message-actions {
             position: absolute;
             top: -20px;
@@ -3067,7 +3046,6 @@
             margin-top: 5px;
         }
 
-        /* --- НОВЫЕ СТИЛИ: ПОИСК СООБЩЕНИЙ --- */
         .search-messages-container {
             padding: 10px 15px;
             background: rgba(255,107,53,0.05);
@@ -3102,7 +3080,6 @@
             font-size: 13px;
         }
 
-        /* --- НОВЫЕ СТИЛИ: КАНАЛЫ --- */
         .channel-info-header {
             text-align: center;
             margin-bottom: 25px;
@@ -3159,12 +3136,10 @@
         .channel-unsubscribe-btn:hover {
             background: rgba(255,255,255,0.2);
         }
-        /* Доп. стили для реакций на каналах */
         .message.channel-message {
             border-left: 4px solid var(--channel);
         }
 
-        /* === НОВЫЕ СТИЛИ: ИНДИКАТОРЫ НАБОРА ТЕКСТА И ЗВОНКОВ === */
         .typing-indicator {
             font-size: 13px;
             color: var(--primary-light);
@@ -3205,7 +3180,6 @@
             100% { opacity: 0.7; }
         }
 
-        /* === НОВЫЕ СТИЛИ: КАСТОМНЫЕ РЕАКЦИИ === */
         .custom-reaction-modal {
             position: fixed;
             top: 0;
@@ -3255,9 +3229,6 @@
             text-align: center;
             margin-bottom: 15px;
         }
-        /* ===== КОНЕЦ СТИЛЕЙ ===== */
-
-        /* === НОВЫЕ СТИЛИ ДЛЯ ПРОГРЕССА ЗАГРУЗКИ ФАЙЛОВ === */
         .upload-progress-message {
             position: relative;
             background: rgba(255,255,255,0.05);
@@ -3281,7 +3252,6 @@
             width: 0%;
             transition: width 0.3s;
         }
-        /* PDF просмотр */
         .pdf-message {
             margin-top: 10px;
             border-radius: 10px;
@@ -3304,7 +3274,6 @@
             align-items: center;
             color: var(--primary);
         }
-        /* Стили для любого документа */
         .doc-preview {
             background: rgba(255,255,255,0.05);
             padding: 10px;
@@ -3776,7 +3745,7 @@
         </div>
     </div>
     
-    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ ВИДЕОСООБЩЕНИЙ (ИСПРАВЛЕНО) -->
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ ЗАПИСИ ВИДЕОСООБЩЕНИЙ -->
     <div id="videoRecordingModal" class="video-recording-modal hidden">
         <div class="video-recording-content">
             <div class="modal-title">Запись видеосообщения</div>
@@ -3873,7 +3842,7 @@
         </div>
     </div>
 
-    <!-- ПРЕВЬЮ ВИДЕОСООБЩЕНИЙ С КРЕСТИКОМ -->
+    <!-- ПРЕВЬЮ ВИДЕОСООБЩЕНИЙ -->
     <div id="videoMessagePreviewModal" class="video-message-preview-modal hidden">
         <div class="video-message-preview-content">
             <video id="videoMessagePreview" controls>
@@ -4022,7 +3991,7 @@
     let currentCallId = null;
     let isCallDisabled = false;
     let speakingIndicatorInterval = null;
-    let callListeners = new Map(); // Для хранения unsubscribe функций звонков
+    let callListeners = new Map();
     let typingTimeouts = new Map();
     let incomingCallData = null;
     
@@ -4035,19 +4004,19 @@
     let currentCamera = 'user';
     let videoStream = null;
     let maxVideoDuration = 60;
-    let maxVideoSize = 50 * 1024 * 1024; // 50MB
-    let currentFileUploads = new Map(); // Для отслеживания загрузки файлов
-    let currentChunkedUploads = new Map(); // Для отслеживания загрузки больших файлов по частям
+    let maxVideoSize = 50 * 1024 * 1024;
+    let currentFileUploads = new Map();
+    let currentChunkedUploads = new Map();
 
     // ==================== НОВЫЕ ПЕРЕМЕННЫЕ ====================
-    let messageReactions = new Map(); // messageId -> { count, users }
+    let messageReactions = new Map();
     let currentlyEditingMessage = null;
-    let channels = new Map(); // channelId -> channel data
-    let userSubscriptions = new Set(); // channel IDs, которые подписан пользователь
-    let typingListeners = new Map(); // Слушатели набора текста
-    let callRingingListeners = new Map(); // Слушатели входящих звонков
-    let currentReplyTo = null; // { id, text, senderName, type, fileData? }
-    let posts = new Map(); // Посты в истории (userId -> [post])
+    let channels = new Map();
+    let userSubscriptions = new Set();
+    let typingListeners = new Map();
+    let callRingingListeners = new Map();
+    let currentReplyTo = null;
+    let posts = new Map();
 
     // ==================== OneSignal ИНИЦИАЛИЗАЦИЯ ====================
     window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -4058,14 +4027,15 @@
             welcomeNotification: {
                 disable: true
             },
-            notifyButton: {
-                enable: true
-            }
+            serviceWorkerParam: { scope: '/' },
+            serviceWorkerPath: 'OneSignalSDKWorker.js'
         });
     });
 
+    // Функция для отправки push-уведомлений
     async function sendPushNotification(userId, title, message, data = {}) {
         try {
+            // Отправляем через Firebase Cloud Messaging или через OneSignal API
             if (window.OneSignal) {
                 const OneSignal = window.OneSignal;
                 await OneSignal.sendSelf(
@@ -4257,13 +4227,11 @@
 
     // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
     function initEventListeners() {
-        // Авторизация
         document.getElementById('loginBtn').addEventListener('click', login);
         document.getElementById('registerBtn').addEventListener('click', register);
         document.getElementById('showRegisterBtn').addEventListener('click', showRegister);
         document.getElementById('showLoginBtn').addEventListener('click', showLogin);
 
-        // Навигация
         document.getElementById('profileBtn').addEventListener('click', showProfile);
         document.getElementById('newChatBtn').addEventListener('click', showNewChatModal);
         document.getElementById('backToChatsBtn').addEventListener('click', backToChats);
@@ -4272,7 +4240,6 @@
             showScreen('chatScreen');
         });
 
-        // Поиск
         document.getElementById('searchUsersInput').addEventListener('input', function(e) {
             const query = e.target.value.trim();
             
@@ -4309,7 +4276,6 @@
             }, 300);
         });
 
-        // Сообщения
         document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
         document.getElementById('attachBtn').addEventListener('click', () => {
             document.getElementById('fileUpload').click();
@@ -4335,7 +4301,6 @@
             }
         });
 
-        // Видеосообщения
         document.getElementById('videoMessageBtn').addEventListener('click', startVideoRecording);
         document.getElementById('recordStartBtn').addEventListener('click', startRecordingVideo);
         document.getElementById('recordStopBtn').addEventListener('click', stopRecordingVideo);
@@ -4343,23 +4308,19 @@
         document.getElementById('cancelVideoRecordingBtn').addEventListener('click', closeVideoRecordingModal);
         document.getElementById('sendVideoMessageBtn').addEventListener('click', sendVideoMessage);
 
-        // Профиль
         document.getElementById('editNameBtn').addEventListener('click', editName);
         document.getElementById('logoutBtn').addEventListener('click', logout);
         document.getElementById('showAvatarModalBtn').addEventListener('click', showAvatarModal);
         document.getElementById('createPostBtn').addEventListener('click', createPost);
 
-        // Аватарка
         document.getElementById('avatarUpload').addEventListener('change', function(e) {
             handleAvatarUpload(e.target.files[0]);
         });
 
-        // Файлы
         document.getElementById('fileUpload').addEventListener('change', function(e) {
             handleFileUpload(e.target.files);
         });
 
-        // Модальные окна
         document.getElementById('cancelAvatarBtn').addEventListener('click', closeAvatarModal);
         document.getElementById('saveAvatarBtn').addEventListener('click', saveAvatar);
         document.getElementById('uploadAvatarBtn').addEventListener('click', () => {
@@ -4372,7 +4333,6 @@
             });
         });
 
-        // Группы
         document.getElementById('createGroupBtn').addEventListener('click', createGroup);
         document.getElementById('createChannelBtn').addEventListener('click', createChannel);
         document.getElementById('cancelGroupBtn').addEventListener('click', closeGroupModal);
@@ -4388,7 +4348,6 @@
             });
         });
 
-        // Голосовые сообщения
         const voiceBtn = document.getElementById('voiceBtn');
         voiceBtn.addEventListener('mousedown', startVoiceRecording);
         voiceBtn.addEventListener('touchstart', startVoiceRecording);
@@ -4398,7 +4357,6 @@
 
         document.getElementById('disableCallBtn').addEventListener('click', toggleCallsDisabled);
 
-        // Звонки
         document.getElementById('callBtn').addEventListener('click', () => {
             if (isCallDisabled) {
                 showNotification('Звонки отключены. Включите их в настройках.', 'warning');
@@ -4524,7 +4482,6 @@
             }
         });
 
-        // НОВЫЕ ОБРАБОТЧИКИ: поиск сообщений
         const searchInput = document.getElementById('searchMessagesInput');
         searchInput.addEventListener('input', (e) => {
             if (searchTimeout) clearTimeout(searchTimeout);
@@ -4535,7 +4492,6 @@
         document.getElementById('prevSearchBtn').addEventListener('click', prevSearchResult);
         document.getElementById('nextSearchBtn').addEventListener('click', nextSearchResult);
 
-        // Подписка на каналы
         document.getElementById('channelSubscribeBtn')?.addEventListener('click', async () => {
             const channelId = currentChat?.id;
             if (channelId) await subscribeToChannel(channelId);
@@ -4545,14 +4501,12 @@
             if (channelId) await unsubscribeFromChannel(channelId);
         });
 
-        // Управление звонками
         document.getElementById('muteCallBtnVideo').addEventListener('click', toggleMute);
         document.getElementById('muteCallBtnAudio').addEventListener('click', toggleMute);
         document.getElementById('speakerCallBtnVideo').addEventListener('click', toggleSpeaker);
         document.getElementById('speakerCallBtnAudio').addEventListener('click', toggleSpeaker);
         document.getElementById('videoToggleBtn').addEventListener('click', toggleVideo);
 
-        // Ответы на сообщения
         document.getElementById('cancelReplyBtn').addEventListener('click', cancelReply);
         document.getElementById('profileAvatarContainer').addEventListener('click', () => {
             if (currentUser && currentUser.avatar) {
@@ -6759,7 +6713,6 @@
             
             let content = '';
             
-            // Определяем, большое ли видео (отправлено через чанки)
             const isLargeVideo = message.fileId && message.fileId.startsWith('video_');
             
             if (isLargeVideo) {
@@ -6899,11 +6852,9 @@
                 </div>
             `;
         } else if (message.type === 'file' || message.type === 'image' || message.type === 'video') {
-            // Определяем, является ли файл большим (отправлен через чанки)
             const isLargeFile = message.fileId && (message.fileId.startsWith('file_') || message.fileId.startsWith('video_'));
             const fileId = message.fileId || message.fileData;
             
-            // Для изображений, если это не большой файл, показываем миниатюру
             if (message.type === 'image' && !isLargeFile && message.fileData && message.fileData.startsWith('data:image')) {
                 content = `
                     ${replyHTML}
@@ -6931,7 +6882,6 @@
                     </button>
                 `;
             } else {
-                // Обычный файл или большой файл
                 content = `
                     ${replyHTML}
                     <div>${message.text || (message.type === 'image' ? 'Изображение' : message.type === 'video' ? 'Видео' : 'Файл')}</div>
@@ -7018,7 +6968,7 @@
         
         container.appendChild(div);
         
-        // Проверка на активный звонок - отправляем push-уведомление, если мы не в чате
+        // Отправляем push-уведомление, если мы не в чате
         if (!isOwn && !currentChat?.isGroup && !currentChat?.isChannel) {
             if (!document.hasFocus() || !currentChat || currentChat.id !== message.chatId) {
                 const senderName = message.senderName || 'Неизвестный';
@@ -7215,7 +7165,7 @@
         document.getElementById('replyingIndicator').classList.add('hidden');
     }
 
-    // ==================== ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ ФАЙЛОВ (разбивка по 500KB) ====================
+    // ==================== ФУНКЦИИ ДЛЯ ФАЙЛОВ ====================
     async function handleFileUpload(files) {
         if (!files || !currentChat || !currentUser) return;
         
@@ -7893,26 +7843,20 @@
                 showNotification(`Загружено ${chunks.length} из ${videoData.totalChunks} частей`, 'warning');
             }
             
-            // ИСПРАВЛЕНИЕ: Правильно собираем base64 из частей
-            // Получаем MIME-тип из первого чанка (если есть)
             const mimeType = videoData.fileType || 'video/webm';
             
-            // Извлекаем только base64-данные из каждого чанка (после запятой)
             let base64Data = '';
             for (const chunk of chunks) {
                 const parts = chunk.split(',');
                 if (parts.length > 1) {
                     base64Data += parts[1];
                 } else {
-                    // Если по какой-то причине нет запятой, добавляем как есть
                     base64Data += chunk;
                 }
             }
             
-            // Восстанавливаем полный base64 с правильным MIME-типом
             const fullBase64 = `data:${mimeType};base64,${base64Data}`;
             
-            // Сохраняем файл с сортировкой по папкам
             await saveFileToDevice(fullBase64, videoData.fileName, mimeType, false);
             
         } catch (error) {
@@ -7957,7 +7901,6 @@
         document.getElementById('recordingIndicator').style.display = 'none';
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ФАЙЛОВ ====================
     async function compressVideo(file, maxSizeMB = 500) {
         return new Promise((resolve, reject) => {
             const maxSizeBytes = maxSizeMB * 1024 * 1024;
@@ -7981,7 +7924,6 @@
         });
     }
 
-    // ==================== ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ ОТПРАВКИ БОЛЬШИХ ФАЙЛОВ ====================
     async function sendLargeFile(file, chatId, messageType) {
         try {
             const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -8032,7 +7974,6 @@
                     updatedAt: serverTimestamp()
                 });
                 
-                // Прогресс для больших файлов
                 if (file.size > 5 * 1024 * 1024) { // > 5MB
                     await new Promise(resolve => setTimeout(resolve, 500));
                 } else {
@@ -8052,7 +7993,7 @@
                 text: messageType === 'image' ? '[Изображение]' : 
                       messageType === 'video' ? '[Видео]' : '[Файл]',
                 type: messageType,
-                fileId: fileId, // Сохраняем fileId вместо base64
+                fileId: fileId,
                 fileName: file.name,
                 fileType: file.type,
                 fileSize: file.size,
@@ -8087,7 +8028,6 @@
         }
     }
 
-    // ==================== НОВАЯ ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ СКАЧИВАНИЯ БОЛЬШИХ ФАЙЛОВ ====================
     async function downloadLargeFile(fileId) {
         try {
             showLoading(true);
@@ -8128,26 +8068,20 @@
                 showNotification(`Загружено ${chunks.length} из ${fileData.totalChunks} частей`, 'warning');
             }
             
-            // ИСПРАВЛЕНИЕ: Правильно собираем base64 из частей
-            // Получаем MIME-тип
             const mimeType = fileData.fileType || 'application/octet-stream';
             
-            // Извлекаем только base64-данные из каждого чанка (после запятой)
             let base64Data = '';
             for (const chunk of chunks) {
                 const parts = chunk.split(',');
                 if (parts.length > 1) {
                     base64Data += parts[1];
                 } else {
-                    // Если по какой-то причине нет запятой, добавляем как есть
                     base64Data += chunk;
                 }
             }
             
-            // Восстанавливаем полный base64 с правильным MIME-типом
             const fullBase64 = `data:${mimeType};base64,${base64Data}`;
             
-            // Сохраняем файл с сортировкой по папкам
             await saveFileToDevice(fullBase64, fileData.fileName, mimeType, false);
             
         } catch (error) {
@@ -8158,7 +8092,6 @@
         }
     }
 
-    // ==================== НОВАЯ ФУНКЦИЯ ДЛЯ СОХРАНЕНИЯ ФАЙЛОВ С СОРТИРОВКОЙ ПО ПАПКАМ ====================
     async function saveFileToDevice(fileDataOrId, fileName, fileType, isLargeFile = false) {
         try {
             showLoading(true);
@@ -8167,10 +8100,7 @@
             let fileBlob;
             let finalMimeType = fileType || 'application/octet-stream';
             
-            // Определяем, является ли fileDataOrId ID большого файла или самим base64
             if (isLargeFile && (fileDataOrId.startsWith('file_') || fileDataOrId.startsWith('video_'))) {
-                // Это ID большого файла, нужно загрузить через downloadLargeFile/downloadLargeVideo
-                // Но чтобы не дублировать логику, мы просто вызовем соответствующую функцию и выйдем
                 showLoading(false);
                 if (fileDataOrId.startsWith('video_')) {
                     await downloadLargeVideo(fileDataOrId);
@@ -8180,20 +8110,16 @@
                 return;
             }
             
-            // Если это обычный base64 или ссылка
             if (fileDataOrId.startsWith('data:')) {
-                // Преобразуем base64 в Blob
                 const response = await fetch(fileDataOrId);
                 fileBlob = await response.blob();
             } else if (fileDataOrId.startsWith('http') || fileDataOrId.startsWith('blob')) {
-                // Загружаем по URL
                 const response = await fetch(fileDataOrId);
                 fileBlob = await response.blob();
             } else {
                 throw new Error('Неизвестный формат данных');
             }
             
-            // Определяем категорию файла
             let category = 'Other';
             if (fileType?.startsWith('image/')) {
                 category = 'Images';
@@ -8205,7 +8131,6 @@
                 category = 'Documents';
             }
             
-            // Пытаемся использовать современное File System Access API для выбора папки
             if ('showDirectoryPicker' in window) {
                 try {
                     const directoryHandle = await window.showDirectoryPicker({
@@ -8214,16 +8139,13 @@
                         startIn: 'downloads'
                     });
                     
-                    // Создаем основную папку AbSgram
                     let absgramDir;
                     try {
                         absgramDir = await directoryHandle.getDirectoryHandle('AbSgram', { create: true });
                     } catch (e) {
-                        // Если не удалось создать в выбранной, используем корень
                         absgramDir = directoryHandle;
                     }
                     
-                    // Создаем подпапку для категории
                     let categoryDir;
                     try {
                         categoryDir = await absgramDir.getDirectoryHandle(category, { create: true });
@@ -8231,7 +8153,6 @@
                         categoryDir = absgramDir;
                     }
                     
-                    // Создаем файл
                     const fileHandle = await categoryDir.getFileHandle(fileName, { create: true });
                     const writable = await fileHandle.createWritable();
                     await writable.write(fileBlob);
@@ -8241,12 +8162,10 @@
                     showDownloadNotification(fileName);
                     
                 } catch (err) {
-                    // Пользователь отменил выбор папки или API не сработал, используем стандартное скачивание
                     console.warn('File System Access API не сработал, используем стандартное скачивание', err);
                     standardDownload(fileBlob, fileName, finalMimeType);
                 }
             } else {
-                // Браузер не поддерживает File System Access API, используем стандартное скачивание
                 standardDownload(fileBlob, fileName, finalMimeType);
             }
             
@@ -8254,7 +8173,6 @@
             console.error('Ошибка сохранения файла:', error);
             showNotification('Ошибка сохранения файла: ' + error.message, 'error');
             
-            // В случае ошибки пробуем просто скачать в папку Downloads
             if (fileDataOrId.startsWith('data:')) {
                 const link = document.createElement('a');
                 link.href = fileDataOrId;
@@ -8269,7 +8187,6 @@
         }
     }
 
-    // Вспомогательная функция для стандартного скачивания
     function standardDownload(blob, fileName, mimeType) {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -8282,22 +8199,18 @@
         showDownloadNotification(fileName);
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ СКАЧИВАНИЯ ФАЙЛОВ (СОВМЕСТИМОСТЬ) ====================
     function downloadFileFromMessage(fileDataOrId, fileName, fileType) {
         try {
-            // Если это большой файл (отправлен через чанки)
             if (fileDataOrId && (fileDataOrId.startsWith('file_') || fileDataOrId.startsWith('video_'))) {
                 saveFileToDevice(fileDataOrId, fileName, fileType, true);
                 return;
             }
             
-            // Если это ссылка на внешний ресурс
             if (fileDataOrId.startsWith('http') || fileDataOrId.startsWith('blob')) {
                 window.open(fileDataOrId, '_blank');
                 return;
             }
             
-            // Обычный файл (base64)
             saveFileToDevice(fileDataOrId, fileName, fileType, false);
             
         } catch (error) {
@@ -8310,7 +8223,6 @@
         }
     }
 
-    // ==================== ФУНКЦИИ ЗВОНКОВ ====================
     function toggleCallsDisabled() {
         isCallDisabled = !isCallDisabled;
         const disableBtn = document.getElementById('disableCallBtn');
@@ -9259,7 +9171,6 @@
         return 'call_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    // ==================== УВЕДОМЛЕНИЯ О ЗВОНКАХ ====================
     async function setupCallListeners() {
         if (!currentUser || authError) return;
 
@@ -9351,7 +9262,6 @@
         ringtone.currentTime = 0;
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ЗАГРУЗКИ ФАЙЛОВ ====================
     function createUploadProgress(fileId, fileName, fileSize) {
         const progressContainer = document.createElement('div');
         progressContainer.className = 'upload-progress-container';
@@ -9380,7 +9290,7 @@
 
     async function uploadFileWithProgress(file, messageElementId = null) {
         const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        const chunkSize = 1 * 1024 * 1024; // 1MB чанки
+        const chunkSize = 1 * 1024 * 1024;
         const totalChunks = Math.ceil(file.size / chunkSize);
         let uploadedChunks = 0;
         
@@ -9438,7 +9348,6 @@
         }
     }
 
-    // ==================== НОВЫЕ ФУНКЦИИ ====================
     function showEditMessageModal(messageId, currentText) {
         currentlyEditingMessage = messageId;
         const newText = prompt('Редактировать сообщение:', currentText);
@@ -9529,10 +9438,10 @@
             }
         } catch (error) {
             console.error('Ошибка добавления реакции:', error);
+            showNotification('Ошибка добавления реакции', 'error');
         }
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ НЕПРОЧИТАННЫХ СООБЩЕНИЙ ====================
     function updateUnreadCounts() {
         if (!currentUser) return;
         
@@ -9649,7 +9558,6 @@
         }
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ КАНАЛОВ ====================
     async function createChannel() {
         const channelName = document.getElementById('channelName').value.trim();
         const channelDesc = document.getElementById('channelDescription').value.trim();
@@ -9804,7 +9712,6 @@
         }
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ПОИСКА СООБЩЕНИЙ ====================
     function searchMessages(query) {
         if (!query.trim()) {
             currentMessageSearch = { index: 0, results: [] };
@@ -9870,7 +9777,6 @@
             `${currentMessageSearch.index + 1}/${currentMessageSearch.results.length}`;
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ИНДИКАТОРОВ НАБОРА ТЕКСТА ====================
     function setupTypingListener(chatId) {
         if (!chatId || typingListeners.has(chatId) || authError) return;
         
@@ -9966,7 +9872,6 @@
         }
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ИНДИКАТОРОВ ЗВОНКОВ ====================
     function setupCallRingingListener(chatId) {
         if (!chatId || callRingingListeners.has(chatId) || authError) return;
         
@@ -10009,7 +9914,6 @@
         ringingEl.classList.add('hidden');
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ ИСТОРИИ (ПОСТЫ) ====================
     function createPost() {
         const postText = prompt('Введите текст поста (до 200 символов):');
         if (!postText || postText.trim() === '') return;
@@ -10030,7 +9934,6 @@
         showNotification('Пост добавлен в историю', 'success');
     }
 
-    // ==================== ФУНКЦИИ ДЛЯ КАСТОМНЫХ РЕАКЦИЙ ====================
     let currentReactionMessageId = null;
 
     function showCustomReactionModal(messageId) {
@@ -10061,7 +9964,6 @@
         });
     });
 
-    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
     function init() {
         console.log("🚀 Инициализация AbSgram 7.5 HD...");
         initEventListeners();
@@ -10153,7 +10055,7 @@
     window.setReply = setReply;
     window.deleteMessage = deleteMessage;
     window.showCustomReactionModal = showCustomReactionModal;
-    window.saveFileToDevice = saveFileToDevice; // Экспортируем новую функцию
+    window.saveFileToDevice = saveFileToDevice;
 
     init();
     </script>
